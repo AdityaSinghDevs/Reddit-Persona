@@ -25,5 +25,20 @@ def main():
         print( "[!]Invalid Profile or URL format.[!]")
         return
     
+    print(f"Fetching data for user : u/{username}...")
+
+    reddit  = init_reddit_client()
+    user_texts = scrape_user_data(reddit, username)  
+
+    
+    # with open(f"{username}_data.txt", "w", encoding="utf-8") as f:
+    #     f.write(f"Reddit data for user: {username}\n")
+    #     f.write("="*50 + "\n\n")
+    #     for i, text in enumerate(user_texts, 1):
+    #         f.write(f"--- Item {i} ---\n")
+    #         f.write(f"{text}\n\n")
+    
+    # print(f"Data saved to {username}_data.txt")
+    #Checking what the output feels like 
 
 main()
