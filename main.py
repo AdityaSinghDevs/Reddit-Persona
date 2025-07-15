@@ -47,11 +47,17 @@ def main():
     chunks = chunk_user_data(user_texts)
     persona_dict = generate_persona_from_text(chunks, username=username)
 
-    with open(f"{username}_persona_raw.txt", "w", encoding="utf-8") as f:
-        f.write(persona_dict["persona_raw"])
+    #Testing output of llm into text file
+    # with open(f"{username}_persona_raw.txt", "w", encoding="utf-8") as f:
+    #     f.write(persona_dict["persona_raw"])
 
-    print(f"\n✅ Full raw persona saved to: {username}_persona_raw.txt\n")
+    # print(f"\n Full raw persona saved to: {username}_persona_raw.txt\n")
+    
+    #Formatting the output LLM gave
+    cleaned_data = format_persona_output(persona_dict["persona_raw"])
 
+    #Saving it to a .txt file in sample_outputs/
+    save_persona_to_txt(username, cleaned_data)
 
 
 main()
