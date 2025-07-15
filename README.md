@@ -321,6 +321,15 @@ https://praw.readthedocs.io/en/stable/getting_started/quick_start.html
 ## 10. Groq Setup and API Key
 To access the LLaMA 3.3 70B model via Groq’s inference API, you need a Groq API key.
 
+##  Why Groq?
+
+Groq was chosen specifically for this assignment because it provides **extremely fast and scalable inference** for large language models like **LLaMA 3.3 70B** — ideal for generating multiple Reddit persona blocks in near real-time.
+
+Unlike traditional providers, Groq’s ultra-low latency ensures that each chunk of Reddit content is processed swiftly, making the tool responsive even with long user histories.
+
+For an academic-style persona generation system that relies on **multiple structured completions**, Groq offers the perfect balance of **speed, quality, and reliability**.
+
+
 ### Steps to Get a Groq API Key:
 1. Go to https://console.groq.com
 
