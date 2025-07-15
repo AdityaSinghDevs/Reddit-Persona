@@ -8,14 +8,29 @@ import praw
 #Testing the keys
 
 def init_reddit_client():
-    """Initialize the Reddit client. in Read-only instance"""
+    """Initialize the Reddit client. in Read-only instance using PRAW
+    
+    Returns : praw.Reddit -> Configured Reddit instance for API access"""
     reddit = praw.Reddit(client_id = reddit_client_id,
                      client_secret = reddit_client_secret,
                         user_agent = reddit_user_agent)
     return reddit 
 
 def scrape_user_data(reddit, username, max_comments=30, max_posts = 10):
-    """ This function will scrape the user data from reddit."""
+    """ This function will scrape the user data from reddit.
+    
+    Args:
+       - reddit (praw.Reddit): Initialized Reddit client.
+       - username (str) : Reddit username to scrape data from
+       - max_comments(int)[optional]: Maximum number of comments to fetch, Dedault set to 30
+       - max_posts(int)[optional]: Maximum number of posts to fetch, Dedault set to 10
+
+    Returns:
+        user_texts (list): List of strings containing user comments and post content
+
+    [Note]:
+        Skips '[deleted]' content and handles exceptions with error logging
+    """
     
     #User Profile
     user = reddit.redditor(username)
@@ -27,9 +42,9 @@ def scrape_user_data(reddit, username, max_comments=30, max_posts = 10):
             if comment.body and comment.body.strip().lower() != '[deleted]':
                 user_texts.append(comment.body.strip())
     except Exception as e:
-        print(f"[!]Error Fetching comments for {username} : {e}")
+        print(f"[!!!]Error Fetching comments for {username} : {e}")
 
-    #Getting posts or submissions in reddit terms
+    #Getting posts or submissions (in reddit terms)
     try :
         for submission in user.submissions.new(limit=max_posts) :
             text = submission.title or ""
@@ -39,6 +54,6 @@ def scrape_user_data(reddit, username, max_comments=30, max_posts = 10):
                 if text and text.lower() != '[deleted]':
                     user_texts.append(text)   
     except Exception as e:
-        print(f"[!]Error fetching post for {username} : {e}")
+        print(f"[!!!]Error fetching post for {username} : {e}")
 
     return user_texts

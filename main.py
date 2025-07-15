@@ -1,9 +1,18 @@
 from scraper import init_reddit_client, scrape_user_data
 from formatter import format_persona_output, save_persona_to_txt
-from llm_inferencer import chunk_user_data, generate_persona_from_text
+from llm_inferencer import chunk_user_data, generate_persona_from_text, evaluate_and_append_best_persona
 
 def get_username_from_url(url):
-    '''This function extracts username from url provided'''
+    '''This function extracts username from url provided
+    
+    Handles trailing slashes, 'user', and 'u' segments.
+
+    Args:
+        url (str): Reddit profile URL or username.
+
+    Returns:
+        str or None : Extracted username or None if invalid    
+    '''
     parts = url.strip().rstrip("/")
 
     if "/" not in url and not url.startswith("http"):
@@ -18,13 +27,19 @@ def get_username_from_url(url):
 #Trailing slashes, username and 'u' handled here
 
 def main():
+    '''
+    Main function to generate as Reddit user persona.
+
+    Prompts for a URL, scrapes data, generates a persona and saves it to a file
+    '''
+
     print("Reddit Persona Gen\n")
 
     url  = input("Enter url for the Reddit Profile : ")
     username  = get_username_from_url(url)
 
     if not username :
-        print( "[!]Invalid Profile or URL format.[!]")
+        print( "[!!!]Invalid Profile or URL format.[!!!]")
         return
     
     print(f"Fetching data for user : u/{username}...")
@@ -59,5 +74,7 @@ def main():
     #Saving it to a .txt file in sample_outputs/
     save_persona_to_txt(username, cleaned_data)
 
+    evaluate_and_append_best_persona(filepath=f"sample_outputs/{username}_persona.txt", username=username)
 
-main()
+if __name__ == "__main__":
+    main()

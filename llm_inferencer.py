@@ -1,9 +1,10 @@
 from config import groq_api_key
 from groq import Groq
 
-model_name = "llama-3.3-70b-versatile" #Can modify the model being used form here
+model_name = "llama-3.3-70b-versatile" #Can modify the model being used for LLM from here
 
 '''Groq's API SDK'''
+#Initializing Groq client with API key
 client = Groq(api_key = groq_api_key)
 # chat_completion = client.chat.completions.create(
 #     messages=[
@@ -31,6 +32,16 @@ client = Groq(api_key = groq_api_key)
 def chunk_user_data(text_list, max_chars=2000):
     '''
     Splitting Reddit user text into smaller chunks for LLM input
+
+    Args:
+        text_list (list): List of text strings (e.g. Reddit comment/posts).
+        max_chars (int)[optional]: Maximum Characters per chunk, Defaults to 2000
+
+    Returns:
+        chunks (list) : list of text chunks.
+
+    Raises:
+        ValueError : if max_chars is less than 1.
     '''
 
     if not text_list:
@@ -62,7 +73,16 @@ def chunk_user_data(text_list, max_chars=2000):
 
 def generate_persona_from_text(chunks, username ="UnknownUser", model=model_name):
     '''
-    Sends Reddit text chunks to Groq's LLM and builds a structured user persona'''
+    Sends Reddit text chunks to Groq's LLM and builds a structured user persona
+    
+    Args:
+        chunks (list): List of text chunks to analyze.
+        username (str)[optional]: Reddit username. Defaults to "UnknownUser"
+        model (str)[optional]: Groq model name. Defaults to model_name
+
+    Returns:
+        dict : Dictionary containing username and raw persona text.           
+    '''
 
     sys_prompt = f"""
     You are an expert UX researcher and behavioral analyst specializing in creating detailed user personas from digital footprints.
@@ -156,7 +176,7 @@ def generate_persona_from_text(chunks, username ="UnknownUser", model=model_name
             full_persona_parts.append(persona_piece)
 
         except Exception as e:
-            print(f"[!] LLM error on chunk : {i+1} : {e}")
+            print(f"[!!!] LLM error on chunk : {i+1} : {e}")
     
 
     full_persona = "\n\n".join(full_persona_parts)
@@ -165,3 +185,69 @@ def generate_persona_from_text(chunks, username ="UnknownUser", model=model_name
         "username":username,
         "persona_raw": full_persona
     }
+
+def evaluate_and_append_best_persona(filepath="sample_outputs/username_persona.txt", username="UnknownUser"):
+    """
+    Evaluates multiple personas in a file and appends a summary of the best one at the end.
+
+    Args:
+        filepath (str, optional): Path to the persona file. Defaults to "sample_outputs/username_persona.txt".
+        username (str, optional): Reddit username. Defaults to "UnknownUser".
+
+    Note:
+        Appends a summary starting with '=== Recommended Persona Summary ==='.
+
+        This is an under-development function and disabled by default and can be toggled on/off by uncommenting the `is_active = True` line below.
+    """
+
+    # Toggle this line to activate the function: set is_active = True
+    is_active = False  # Default is off (simulates commented state)
+
+    if not is_active:
+        print("This function is off. Uncomment 'is_active = True' to enable it.")
+        return
+    print("This function is toggled on. Evaluating and appending the best persona...")
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            all_personas = f.read()
+    except FileNotFoundError:
+        print(f"[!!!] Persona file not found at: {filepath}")
+        return
+
+    evaluation_prompt = f"""
+    You are a senior UX researcher. You have been given multiple persona blocks generated from different chunks of Reddit user u/{username}'s activity.
+
+    Each block starts with a line like:
+    === Persona based on Chunk X ===
+
+    Your task:
+    1. Evaluate and compare the personas.
+    2. Choose the one that is the most complete, consistent, and insight-rich.
+    3. Summarize which chunk is the strongest and briefly explain why (2–4 sentences).
+    4. Recommend that persona for final reference.
+
+    Do not rewrite the personas. Just return your summary and reasoning clearly, starting with:
+
+    === Recommended Persona Summary ===
+
+    """
+
+    try:
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": "You are a highly skilled UX analyst."},
+                {"role": "user", "content": evaluation_prompt + "\n\n" + all_personas}
+            ]
+        )
+
+        summary = response.choices[0].message.content
+
+        with open(filepath, "a", encoding="utf-8") as f:
+            f.write("\n\n" + "="*60 + "\n")
+            f.write(summary.strip())
+
+        print("Summary of best persona appended to:", filepath)
+
+    except Exception as e:
+        print(f"[!!!] Error during evaluation: {e}")

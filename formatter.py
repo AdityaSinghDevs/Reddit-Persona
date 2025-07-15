@@ -3,7 +3,15 @@ import os
 def format_persona_output(raw_text:str)-> str:
     '''
     Cleans and formats raw persona output from the LLM
-    Removes any duplicacy, extra spaces, and normalize section breaks'''
+    Removes any duplicacy, extra spaces, and normalize section breaks
+    
+    Args:
+        raw_text (str) : Raw persona text from the LLM.
+
+    Returns:
+        (str) : Formatted persona text    
+    
+    '''
 
     lines = raw_text.strip().splitlines()
     seen = set()
@@ -26,7 +34,11 @@ def format_persona_output(raw_text:str)-> str:
     return "\n".join(formatted_lines).strip()
 
 def save_persona_to_txt(username:str, cleaned_text:str):  
-    '''Saving cleaned persona output into sample_outputs/<username>_persona.txt
+    '''Saving cleaned persona output into sample_outputs directory as <username>_persona.txt
+
+    Args:
+        username (str) : Reddit username for file naming
+        cleaned_text (str) : Formatted persona text to save 
     '''
 
     os.makedirs("sample_outputs", exist_ok=True)
