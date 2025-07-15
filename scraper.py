@@ -1,4 +1,4 @@
-from config import reddit_client_id, reddit_client_secret, reddit_user_agent, groq_api_key
+from config import reddit_client_id, reddit_client_secret, reddit_user_agent
 import praw
 
 

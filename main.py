@@ -1,4 +1,6 @@
 from scraper import init_reddit_client, scrape_user_data
+from formatter import format_persona_output, save_persona_to_txt
+from llm_inferencer import chunk_user_data, generate_persona_from_text
 
 def get_username_from_url(url):
     '''This function extracts username from url provided'''
@@ -39,6 +41,17 @@ def main():
     #         f.write(f"{text}\n\n")
     
     # print(f"Data saved to {username}_data.txt")
-    #Checking what the output feels like 
+
+    #Checking what the output looks like 
+
+    chunks = chunk_user_data(user_texts)
+    persona_dict = generate_persona_from_text(chunks, username=username)
+
+    with open(f"{username}_persona_raw.txt", "w", encoding="utf-8") as f:
+        f.write(persona_dict["persona_raw"])
+
+    print(f"\n✅ Full raw persona saved to: {username}_persona_raw.txt\n")
+
+
 
 main()
