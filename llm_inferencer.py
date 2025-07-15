@@ -94,6 +94,8 @@ def generate_persona_from_text(chunks, username ="UnknownUser", model=model_name
     - When a direct answer isn't available, provide your **best estimate** with a confidence label: HIGH / MEDIUM / LOW
     - For each inferred point, briefly explain your reasoning or context clues
     - Include **at least 3–5 direct Reddit quotes** across the persona to support your insights
+    → When quoting, **retain any visible timestamps like [Comment on YYYY-MM-DD]** to give temporal context where present.
+
     - If truly no data exists, first make an estimate and then clearly state: "Insufficient data"
         [e.g. Age: Estimated 25–35 (Insufficient direct evidence; inferred from vocabulary, subreddit usage, and cultural references — confidence: Medium)]
     - Ignore any other users mentioned or quoted in the content
@@ -110,13 +112,14 @@ def generate_persona_from_text(chunks, username ="UnknownUser", model=model_name
     - Archetype: [e.g., The Analyst, The Creator, The Explorer, etc.]
 
     Traits:
-    - (3 to 5 adjectives describing this user's traits with 1-2 quotes if possible)
+    - (3 to 5 adjectives describing this user's traits with 1-2 quotes if possible along with direct timestamp labels if present)
 
     Motivation (Ranked):
     1. [Primary motivation + reason + confidence]
     2. [Secondary motivation + reason]
     3. [Tertiary motivation + reason]
-    (Use categories like curiosity, expression, connection, influence, growth etc.)
+    
+    (Use categories like curiosity, expression, connection, influence, growth etc. and Support 2-3 of these points with direct Reddit quotes with direct timestamp labels if possible )
 
 
     Personality (MBTI style):
@@ -126,22 +129,24 @@ def generate_persona_from_text(chunks, username ="UnknownUser", model=model_name
     • Judging vs Perceiving: [...]
     • Likely Type: [e.g., INTP, ESTJ]
     For all give (Confidence + reason)
+    - Support 1-2 of these points with direct Reddit quotes with direct timestamp labels if possible
 
     Behaviour and Habits:
     - Bullet points Describing user's observed activity style, language, tone, subreddit choices, timing, etc.
-    - Support 1-2 of these points with direct Reddit quotes if possible
+    - Support 2-3 of these points with direct Reddit quotes with direct timestamp labels if possible
     • Quote 1: "..."  
     • Quote 2: "..."
 
     Frustration:
     - Bullet points summarising what annoys, concerns, or irritates the user + 1–2 quotes if possible
-    - User direct quotes of relevant
+    - User direct quotes of relevant with timestamps label if present
 
     Goals and Needs:
     - Bullet points stating what this user seems to care about, desire, aim to improve or seeks from Reddit
+    - User direct quotes of relevant with timestamps label if present
 
     QUOTE THAT CAPTURES ESSENCE
-    "[[One quote that captures the user’s mindset, humor, or style]"
+    "[[One quote that captures the user’s mindset, humor, or style - include the timestamp label if present]"
 
     Make sure the tone is professional and useful for product or UX designers to understand the user deeply
     IMPORTANT: ONLY generate the persona for the author of the provided posts/comments. 
@@ -204,7 +209,7 @@ def evaluate_and_append_best_persona(filepath="sample_outputs/username_persona.t
     is_active = False  # Default is off (simulates commented state)
 
     if not is_active:
-        print("This function is off. Uncomment 'is_active = True' to enable it.")
+        print("[Not-Important]The function 'evaluate_and_append_best_persona' is off. Uncomment 'is_active = True' in llm_inferencer.py to enable it. Check Readme.md to know more")
         return
     print("This function is toggled on. Evaluating and appending the best persona...")
     try:

@@ -47,4 +47,4 @@ def save_persona_to_txt(username:str, cleaned_text:str):
     with open(filepath, "w", encoding = "utf-8") as f:
         f.write(cleaned_text)
 
-    print(f"Formatted persona saved to : {filepath}")    
+    print(f"FORMATTED PERSONA SUCCESSFULLY SAVED AT : {filepath}")    

@@ -30,13 +30,33 @@ def main():
     '''
     Main function to generate as Reddit user persona.
 
-    Prompts for a URL, scrapes data, generates a persona and saves it to a file
+     """
+    Entry point for generating a Reddit user persona.
+
+    This function:
+    - Prompts the user for a Reddit profile URL or username
+    - Extracts the username and validates its format
+    - Checks whether the Reddit user exists using PRAW
+    - Scrapes the user's recent comments and submissions
+    - Splits the data into ~2000-character chunks
+    - Sends each chunk to Groq's LLaMA 3.3-70B model for persona generation
+    - Formats and saves the structured persona to a local .txt file
+    - (Optional) Evaluates and appends the most insight-rich persona chunk summary
+
+    Notes:
+    - The function will terminate early with a message if the input is invalid
+      or if the Reddit user does not exist or is inaccessible.
+    - Intermediate testing and debug code is commented out for optional use.
     '''
+    print("\n" +"="*30 +"\n")
+    print("Reddit Persona Generator\n")
+    print("="*30 + "\n")
 
-    print("Reddit Persona Gen\n")
 
-    url  = input("Enter url for the Reddit Profile : ")
+    url  = input("Enter url for the Reddit Profile you want to create a persona of : ")
     username  = get_username_from_url(url)
+
+    print("="*30 + "\n")
 
     if not username :
         print( "[!!!]Invalid Profile or URL format.[!!!]")
@@ -45,6 +65,14 @@ def main():
     print(f"Fetching data for user : u/{username}...")
 
     reddit  = init_reddit_client()
+
+    #Handling test case : If invalid url or profile given
+    try:
+        reddit.redditor(username).id
+    except Exception as e:
+        print(f"[!!!] The user 'u/{username}' does not exist or could not be accessed.")
+        return
+
     user_texts = scrape_user_data(reddit, username)  
 
     

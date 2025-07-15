@@ -1,7 +1,6 @@
-
 import streamlit as st
 from scraper import init_reddit_client, scrape_user_data
-from llm_inferencer import chunk_user_data, generate_persona_from_text
+from llm_inferencer import chunk_user_data, generate_persona_from_text, evaluate_and_append_best_persona
 from formatter import format_persona_output, save_persona_to_txt
 from main import get_username_from_url
 import os
@@ -16,8 +15,11 @@ This tool analyzes a Reddit user's public activity (posts and comments) to gener
 """
 )
 
-# Input field for Reddit username or profile URL
-input_url = st.text_input("Enter Reddit Username or Profile URL (e.g. https://www.reddit.com/user/username/):")
+# Input field
+input_url = st.text_input("Enter Reddit Username or Profile URL (e.g. https://www.reddit.com/user/username/)")
+
+# Checkbox to optionally evaluate best persona
+enable_eval = st.checkbox("Evaluate and append best persona chunk (experimental)")
 
 # Button to trigger persona generation
 if st.button("Generate Persona") and input_url:
@@ -46,6 +48,14 @@ if st.button("Generate Persona") and input_url:
 
             # Save to file
             save_persona_to_txt(username, formatted_output)
+
+            # Optional Evaluation
+            if enable_eval:
+                with st.spinner("Evaluating and appending best persona chunk..."):
+                    evaluate_and_append_best_persona(
+                        filepath=f"sample_outputs/{username}_persona.txt",
+                        username=username
+                    )
 
             st.success(f"Persona for u/{username} generated successfully.")
             st.markdown("### Final Persona Output")
